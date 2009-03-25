@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="deriv" default="compile" basedir=".">
+    <!-- Project directories -->
+    <property name="src.dir" value="src" />
+    <property name="test.dir" value="test" />
+    <property name="lib.dir" value="lib"/>
+
+    <!-- Temporary build directories -->
+    <property name="build.dir" value="build" />
+    <property name="build.classes" value="${build.dir}/classes" />
+    <property name="build.tests" value="${build.dir}/tests" />
+
+    <!-- Global settings -->
+    <property name="javac.debug" value="on"/>
+
+    <path id="classpath">
+        <pathelement location="${build.classes}"/>
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init">
+        <!-- make build directories -->
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${build.classes}" />
+        <mkdir dir="${build.tests}" />
+        <!-- timestamp -->
+        <tstamp />
+    </target>
+
+    <target name="compile" depends="init" description="Builds ussdportal">
+        <javac srcdir="${src.dir}"
+            destdir="${build.classes}"
+            classpathref="classpath"
+            debug="${javac.debug}"
+            encoding="cp1251"
+	    target="1.5"
+	    source="1.5"
+            deprecation="on">
+        </javac>
+    </target>
+
+    <target name="test-reports">
+	<mkdir dir="test-reports"/>
+    </target>
+
+    <target name="test" depends="compile,test-reports" description="run tests">
+        <javac srcdir="${test.dir}" destdir="${build.tests}" classpathref="classpath" target="1.5" source="1.5" />        
+        <junit printsummary="yes" haltonfailure="on">
+            <classpath refid="classpath"/>
+            <classpath><pathelement location="${build.tests}"/></classpath>
+	    <formatter type="xml"/>
+            <batchtest todir="test-reports">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="clean" description="Removes classses and javadoc">
+        <delete dir="classes"/>
+        <delete dir="${build.dir}"/>
+    </target>
+</project>
+
